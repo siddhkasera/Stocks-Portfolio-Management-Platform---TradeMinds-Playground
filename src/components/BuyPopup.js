@@ -16,7 +16,8 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Holdings from './Holdings';
+import Holdings from "./Holdings";
+import { ToastContainer, toast } from "react-toastify";
 
 function BuyPopup({ open, openpop, closeModal, stockname, userid, setRender }) {
   // const [price,setPrice]=useState([]);
@@ -28,17 +29,17 @@ function BuyPopup({ open, openpop, closeModal, stockname, userid, setRender }) {
   const getStock = () => {
     return stock;
   };
+  const notify = (data) => toast.error(`${data}`, { autoClose: 3000 });
 
   useEffect(() => {
     axios
       .get(
-        `http://localhost:8080/stock-data?symbol=${stockname}&from=2023-11-21&to=2023-11-22&period=d`
+        `http://localhost:8080/stock-data?symbol=${stockname}&from=2023-11-21&to=2023-11-30&period=d`
       )
       .then((response) => {
         if (response) {
           stock = { ...response.data[0] };
           setClose(stock.close);
-         
         }
       })
       .catch((e) => {
@@ -55,11 +56,11 @@ function BuyPopup({ open, openpop, closeModal, stockname, userid, setRender }) {
       })
       .then((response) => {
         console.log(response, "hiii");
-        if(response)
-        setRender((o)=>!o)
+        if (response) setRender((o) => !o);
       })
-      .catch((e) => {
-        console.error("Axios Error", e.message);
+      .catch((error) => {
+        notify("Invalid funds");
+        console.error("Axios Error", error.message);
       });
   };
 
@@ -102,13 +103,13 @@ function BuyPopup({ open, openpop, closeModal, stockname, userid, setRender }) {
                 </Typography>
               </Box>
               <Box>
-                <FormGroup>
+                {/* <FormGroup>
                   <FormControlLabel
                     sx={{ color: "white" }}
                     control={<Switch defaultChecked />}
                     label="Label"
                   />
-                </FormGroup>
+                </FormGroup> */}
               </Box>
             </Box>
             <Box sx={{ display: "flex", gap: "10px" }}>
@@ -130,7 +131,7 @@ function BuyPopup({ open, openpop, closeModal, stockname, userid, setRender }) {
                   1
                 </TextField>
                 <FormControl>
-                  <RadioGroup
+                  {/* <RadioGroup
                     aria-labelledby="demo-radio-buttons-group-label"
                     defaultValue="market"
                     name="radio-buttons-group"
@@ -140,7 +141,7 @@ function BuyPopup({ open, openpop, closeModal, stockname, userid, setRender }) {
                       control={<Radio />}
                       label="Market"
                     />
-                  </RadioGroup>
+                  </RadioGroup> */}
                 </FormControl>
               </Box>
             </Box>
@@ -169,14 +170,13 @@ function BuyPopup({ open, openpop, closeModal, stockname, userid, setRender }) {
                   Buy
                 </Button>
                 &nbsp;&nbsp;
-                <Button
-                  sx={{ color: "black", border: "0.5px solid white" }}
+                {/* <Button
+                  sx={{ color: 'black', border: '0.5px solid white' }}
                   onClick={() => closeModal()}
                 >
                   Cancel
-                </Button>
-              
-         </Box>
+                </Button> */}
+              </Box>
             </Box>
           </Paper>
         </Grid>

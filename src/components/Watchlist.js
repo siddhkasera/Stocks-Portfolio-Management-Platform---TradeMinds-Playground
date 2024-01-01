@@ -18,7 +18,7 @@ import BuyPopup from './BuyPopup'
 
 // import "react-datepicker/dist/react-datepicker.css";
 let dataForWatchList = () => {}
-function Watchlist ({ user, dataForWatchList, watchlistData, setWatchList }) {
+function Watchlist ({ user, dataForWatchList, watchlistData, setRender, setWatchList }) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   // const flag = false;
@@ -82,7 +82,7 @@ function Watchlist ({ user, dataForWatchList, watchlistData, setWatchList }) {
                 justifyContent: 'space-between',
                 gap: '10%',
                 p: 1,
-                bgcolor: 'lightgray'
+                bgcolor: '#FFE8D6'
               }}
             >
               <Box className='stock-name-box' sx={{}}>
@@ -104,8 +104,9 @@ function Watchlist ({ user, dataForWatchList, watchlistData, setWatchList }) {
                 user={user}
                 dataForWatchList={dataForWatchList}
                 watchlistData={watchlistData}
-                price={obj.price}
                 setWatchList={setWatchList}
+                price={obj.price}
+                setRender={setRender}
               />
             </Paper>
           </div>

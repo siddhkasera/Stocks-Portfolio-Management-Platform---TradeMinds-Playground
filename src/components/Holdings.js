@@ -24,6 +24,9 @@ import Dashboard from "./Dashboard";
 import { SearchBar } from "./SearchBar";
 import Watchlist, { dataForWatchList } from "./Watchlist";
 import { StockDataHoldings } from "./StockDataHoldings";
+import InfoIcon from "@mui/icons-material/Info";
+import HoldingsPopup from "./HoldingsPopup";
+import WatchlistPopup from "./WatchlistPopup";
 
 function Holdings() {
   const [open, setOpen] = useState(false);
@@ -34,8 +37,8 @@ function Holdings() {
   const [close, setClose] = useState(0);
   let [stock, setStock] = useState({});
   var [currentPriceStocks, setCurrentPrice] = useState({});
-  var [openprice,setopenprice] = useState({})
-   const [render,setRender]=useState(false)
+  var [openprice, setopenprice] = useState({});
+  const [render, setRender] = useState(false);
   const abc = (a) => {
     return;
   };
@@ -57,9 +60,14 @@ function Holdings() {
     initialValue
   );
 
-  const currentval1 =(sumWithInitial);
+  const handleClick = () => {
+    // alert(open);
+    setOpen(!open);
+  };
+
+  const currentval1 = sumWithInitial;
   const currentval = (currentval1 * totalQuantity).toFixed(2);
-  let pl = (currentval - totalInvested).toFixed(2)
+  let pl = (currentval - totalInvested).toFixed(2);
 
   if (pl < 0) {
     pl = "-" + pl;
@@ -67,50 +75,81 @@ function Holdings() {
     pl = "+" + pl;
   }
   // const totalMarketprice = Object.values(holdingsdata).reduce((p,stock) => p+stock.invested_value, 0);
-  const setData = (data) =>{
-    setWatchListData(data)
-  }
+  const setData = (data) => {
+    setWatchListData([...data]);
+  };
 
+  const a = (stock, index) => {
+    if (!holdingsdata && !currentPriceStocks) return <></>;
+    return (
+      <StockDataHoldings
+        setRender={setRender}
+        abc={abc}
+        user={userSessionData}
+        stock={stock}
+        index={index}
+        currentPriceStocks={currentPriceStocks}
+        holdingsdata={holdingsdata}
+        openprice={openprice}
+      />
+    );
+  };
 
- const a = (stock,index) =>{
-  if(!holdingsdata&&!currentPriceStocks)
-  return <></>
-  return (
-    <StockDataHoldings setRender={setRender} abc={abc} user={userSessionData} stock={stock} index={index} currentPriceStocks={currentPriceStocks} holdingsdata={holdingsdata} openprice={openprice}/>
-  )
- }
+  // const sendAxiosRequest = async (name) => {
+  // try{
+  //   console.log("i am called",name)
+  //   await axios.get(`http://localhost:8080/stock-data?symbol=${name}&from=2023-11-21&to=2023-11-22&period=d`).
+  //    then((response)=>{
+  //        if(response.data){
+  //          stock={...response.data[0]}
+  //          currentPriceStocks[`${name}`]=stock.close
+  //          openprice[`${name}`]=stock.open
+  //          setCurrentPrice((Prev)=>({...Prev,...currentPriceStocks}))
+  //          setopenprice((Prev)=>({...Prev,...openprice}))
+  //          console.log(stock,"hi")
+  //          console.log(currentPriceStocks,"hiw")
+  //          console.log(openprice,"hiw")
+  //        }
+  //    }).catch(e=>{
+  //      console.error("Axios Error",e.message)
+  //    })
+  // }catch(e){
+  //   console.log(e.message)
+  // }
 
- 
-const sendAxiosRequest = async (name) => {
-  try{
-    console.log("i am called",name)
-    await axios.get(`http://localhost:8080/stock-data?symbol=${name}&from=2023-11-21&to=2023-11-22&period=d`).
-     then((response)=>{
-         if(response.data){
-           stock={...response.data[0]}
-           currentPriceStocks[`${name}`]=stock.close
-           openprice[`${name}`]=stock.open
-           setCurrentPrice((Prev)=>({...Prev,...currentPriceStocks}))
-           setopenprice((Prev)=>({...Prev,...openprice}))
-           console.log(stock,"hi")
-           console.log(currentPriceStocks,"hiw")
-           console.log(openprice,"hiw")
-         }
-     }).catch(e=>{
-       console.error("Axios Error",e.message)
-     })
-  }catch(e){
-    console.log(e.message)
-  }
+  const sendAxiosRequest = async (name) => {
+    try {
+      console.log("i am called", name);
+      await axios
+        .get(
+          `http://localhost:8080/stock-data?symbol=${name}&from=2023-11-21&to=2023-11-22&period=d`
+        )
+        .then((response) => {
+          if (response.data) {
+            stock = { ...response.data[0] };
+            currentPriceStocks[`${name}`] = stock.close;
+            openprice[`${name}`] = stock.open;
+            setCurrentPrice((Prev) => ({ ...Prev, ...currentPriceStocks }));
+            setopenprice((Prev) => ({ ...Prev, ...openprice }));
+            console.log(stock, "hi");
+            console.log(currentPriceStocks, "hiw");
+            console.log(openprice, "hiw");
+          }
+        })
+        .catch((e) => {
+          console.error("Axios Error", e.message);
+        });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
 
-}
-
-
-  useEffect( ()=>{
-    const res =  axios.get(`http://localhost:8080/holdings/${userSessionData.id}/formatted`).
-    then((response)=>{
-        if(response){
-          setHoldings({...response.data})
+  useEffect(() => {
+    const res = axios
+      .get(`http://localhost:8080/holdings/${userSessionData.id}/formatted`)
+      .then((response) => {
+        if (response) {
+          setHoldings(response.data);
         }
       })
       .catch((e) => {
@@ -123,7 +162,7 @@ const sendAxiosRequest = async (name) => {
       console.log("2");
       sendAxiosRequest(data);
     }
-  },[holdingsdata])
+  }, [holdingsdata]);
 
   return (
     <Container maxWidth={false} sx={{ display: "flex", height: "100%" }}>
@@ -135,10 +174,22 @@ const sendAxiosRequest = async (name) => {
           padding: "15px",
           alignItems: "flex-start",
           color: "secondary.main",
+          height:"100vh"
         }}
       >
-        <SearchBar  user={userSessionData} watchlistData={watchlistData} setWatchList={setData} dataForWatchList={dataForWatchList}/>
-        <Watchlist user={userSessionData} dataForWatchList={dataForWatchList} watchlistData={watchlistData} setWatchList={setData} /> 
+        <SearchBar
+          user={userSessionData}
+          watchlistData={watchlistData}
+          setWatchList={setData}
+          dataForWatchList={dataForWatchList}
+        />
+        <Watchlist
+          user={userSessionData}
+          dataForWatchList={dataForWatchList}
+          watchlistData={watchlistData}
+          setWatchList={setData}
+          setRender={setRender}
+        />
       </Container>
       <Container
         sx={{
@@ -146,20 +197,29 @@ const sendAxiosRequest = async (name) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+        
         }}
       >
         <Typography
           variant="h3"
-          sx={{ my: 4, textAlign: "center", color: "secondary.main" }}
+          sx={{ my: 4, textAlign: "center", color: "black" }}
         >
-          Holdings
+          HOLDINGS
+          <Button onClick={handleClick}>
+            <InfoIcon fontSize="medium"> </InfoIcon>
+          </Button>
+          {open ? (
+            <Box sx={{ mt: 1 }}>
+              <HoldingsPopup></HoldingsPopup>
+            </Box>
+          ) : null}
         </Typography>
 
         <Box sx={{ marginBottom: 7, width: "100%" }}>
           <Paper
             elevation={2}
             sx={{
-              bgcolor: "black",
+              bgcolor: "#CB997E",
               p: "2em",
               display: "flex",
               flexDirection: "column",
@@ -197,8 +257,16 @@ const sendAxiosRequest = async (name) => {
               }}
             >
               <Typography variant="h5">P&L</Typography>
-              <Typography sx={{ color: "#03C04A" }} variant="h5">
-                {pl}
+              <Typography sx={{ color: "#03C04A" }}>
+                {pl > 0 ? (
+                  <Typography sx={{ color: "#03C04A", fontSize: "1.1rem" }}>
+                    {pl}
+                  </Typography>
+                ) : (
+                  <Typography sx={{ color: "#FF0000", fontSize: "1.1rem" }}>
+                    {pl}
+                  </Typography>
+                )}
               </Typography>
             </Box>
           </Paper>
@@ -213,7 +281,7 @@ const sendAxiosRequest = async (name) => {
             marginBottom: "3em",
           }}
         >
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{}}>
             {Object.values(holdingsdata).map((stock, index) => a(stock, index))}
           </Grid>
         </Box>

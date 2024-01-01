@@ -16,13 +16,16 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
-function BuyComponent({ stockname, userid, price }) {
+function BuyComponent({ stockname, userid, price, setRender }) {
   // alert(price)
   // const [price,setPrice]=useState([]);
   const [quantity, setQuantity] = useState([]);
   const [close, setClose] = useState(0);
   console.log(quantity);
+  const notify = (data) =>
+    toast.error(`${data}`, { autoClose: 3000, toastId: "error" });
 
   const buyStock = () => {
     axios
@@ -33,13 +36,14 @@ function BuyComponent({ stockname, userid, price }) {
       })
       .then((response) => {
         console.log(response, "hiii");
+        if (response) setRender((o) => !o);
       })
-      .catch((e) => {
-        console.error("Axios Error", e.message);
+      .catch((error) => {
+        console.error("Axios Error", error.message);
       });
   };
 
-  useEffect(buyStock, []);
+  // useEffect(buyStock, [])
 
   return (
     <Container sx={{ bgcolor: "black", padding: "20px" }}>
@@ -76,13 +80,13 @@ function BuyComponent({ stockname, userid, price }) {
                 </Typography>
               </Box>
               <Box>
-                <FormGroup>
+                {/* <FormGroup>
                   <FormControlLabel
-                    sx={{ color: "white" }}
+                    sx={{ color: 'white' }}
                     control={<Switch defaultChecked />}
-                    label="Label"
+                    label='Label'
                   />
-                </FormGroup>
+                </FormGroup> */}
               </Box>
             </Box>
             <Box sx={{ display: "flex", gap: "10px" }}>
@@ -104,17 +108,17 @@ function BuyComponent({ stockname, userid, price }) {
                   1
                 </TextField>
                 <FormControl>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    defaultValue="market"
-                    name="radio-buttons-group"
+                  {/* <RadioGroup
+                    aria-labelledby='demo-radio-buttons-group-label'
+                    defaultValue='market'
+                    name='radio-buttons-group'
                   >
                     <FormControlLabel
-                      value="market"
+                      value='market'
                       control={<Radio />}
-                      label="Market"
+                      label='Market'
                     />
-                  </RadioGroup>
+                  </RadioGroup> */}
                 </FormControl>
               </Box>
             </Box>
@@ -144,6 +148,7 @@ function BuyComponent({ stockname, userid, price }) {
           </Paper>
         </Grid>
       </Grid>
+      <ToastContainer limit={1} />
     </Container>
     /* </div> */
   );

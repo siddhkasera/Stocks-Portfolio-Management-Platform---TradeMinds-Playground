@@ -29,47 +29,34 @@ const { Model } = require('sequelize')
 // };
 
 module.exports = (sequelize, Sequelize) => {
-  const User = sequelize.define('user', {
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: Sequelize.INTEGER
-    },
-    username: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    password: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    email: {
-      type: Sequelize.STRING
-    },
-    phone: {
-      type: Sequelize.STRING
-    },
-    DoB: {
-      type: Sequelize.DATEONLY
-    },
-    profile_img: {
-      type: Sequelize.STRING
-    },
-    funds_available: {
-      type: Sequelize.INTEGER,
-      defaultValue: 0
-    },
-    createdAt: {
-      allowNull: false,
-      type: Sequelize.DATE
-    },
-    updatedAt: {
-      allowNull: false,
-      type: Sequelize.DATE
-    }
+  const UserWatchList = sequelize.define('user_watchlists', {
+    id:{
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      user_id:{
+        type: Sequelize.INTEGER,
+        allowNull:false,
+      },
+      long_name:{
+        type: Sequelize.TEXT,
+        allowNull:false
+      },
+      price:{
+        type: Sequelize.DOUBLE,
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
   })
-  User.associate = function (models) {}
-
-  return User;
+  UserWatchList.associate = function (models) {}
+  
+  return UserWatchList
 }

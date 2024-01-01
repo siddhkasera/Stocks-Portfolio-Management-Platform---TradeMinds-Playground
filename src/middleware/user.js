@@ -29,9 +29,9 @@ async function findUserCredential (email, password) {
     const user = await findEmail(email)
     if (user) {
       isMatch = await bcrypt.compare(password, user.password)
-      return isMatch
+      return { isMatch, user }
     }
-    return isMatch
+    return { isMatch, user }
   } catch (err) {
     console.log('Error checking credentials', err.message)
   }
@@ -39,15 +39,70 @@ async function findUserCredential (email, password) {
 
 async function checkUserExist (username, email) {
   try {
-    const exist = await User.findOne({ where: { email } })
+    const userNameExist = await User.findOne({ where: { username } })
+    const emailExist = await User.findOne({ where: { email } })
+    return [userNameExist, emailExist]
+  } catch (err) {
+    console.log('Cant Find User Existence', err.message)
+  }
+}
+
+// to fetch the user details given only the user-id (int)
+async function getUserDetails (id) {
+  try {
+    const exist = await User.findOne({ where: { id } })
     return exist
   } catch (err) {
     console.log('Cant Find User Existence', err.message)
   }
 }
 
+async function modifyFunds (id, amount) {
+  try {
+    const user = await User.findOne({ where: { id } })
+    if (user) {
+      // logic to take care of withdrawal when amount to be withdrawn > available funds
+      if (amount < 0 && Math.abs(amount) > user['funds_available']) return
+      user['funds_available'] += amount
+      await user.save()
+      return user
+    }
+  } catch (err) {
+    console.log('Cant Find User Existence', err.message)
+  }
+}
+
+async function modifyDetails (user, details) {
+  try {
+    const validFields = [
+      'username',
+      'password',
+      'email',
+      'phone',
+      'DoB',
+      'profile_img',
+      'funds_available'
+    ]
+    for (i in details) {
+      if (validFields.indexOf(i) == -1)
+        return `Field "${i}" is not in the schema for Users DB`
+
+      // if password is the field to be changed then ecncrypt and put it
+      if (i == 'password') details[i] = await bcrypt.hash(details[i], 10)
+      user[i] = details[i]
+    }
+    await user.save()
+    return user
+  } catch (err) {
+    return `Error ${err.message} occured while modifying details`
+  }
+}
+
 module.exports = {
   Create,
   findUserCredential,
-  checkUserExist
+  checkUserExist,
+  getUserDetails,
+  modifyFunds,
+  modifyDetails
 }

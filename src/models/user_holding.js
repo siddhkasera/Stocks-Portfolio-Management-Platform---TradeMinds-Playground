@@ -1,29 +1,38 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+'use strict'
+const { Model } = require('sequelize')
 
-module.exports = (sequelize, DataTypes) => {
-  class User_holding extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    
-    static associate(models) {
-      // define association here
+module.exports = (sequelize, Sequelize) => {
+  const UserHolding = sequelize.define('user_holding', {
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: Sequelize.INTEGER
+    },
+    user_id: {
+      type: Sequelize.INTEGER
+    },
+    stock_name: {
+      type: Sequelize.TEXT
+    },
+    buy_price: {
+      type: Sequelize.DOUBLE
+    },
+    quantity: {
+      type: Sequelize.INTEGER
+    },
+    buy_time: {
+      type: Sequelize.DATE
+    },
+    createdAt: {
+      allowNull: false,
+      type: Sequelize.DATE
+    },
+    updatedAt: {
+      allowNull: false,
+      type: Sequelize.DATE
     }
-  }
-  User_holding.init({
-    user_id: DataTypes.INTEGER,
-    stock_name: DataTypes.TEXT,
-    buy_price: DataTypes.DOUBLE,
-    quantity: DataTypes.INTEGER,
-    buy_time: DataTypes.DATE,
-  }, {
-    sequelize,
-    modelName: 'user_holding',
-  });
-  return User_holding;
-};
+  })
+  UserHolding.associate = function (models) {}
+  return UserHolding
+}
